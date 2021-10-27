@@ -30,11 +30,9 @@ exports.signup = async (req, res) =>{
                 const hashPassword = await bcrypt.hash(req.body.password, 10);
                 //taking user info
                 const newUser = new User({
-                    name: req.body.name,
+                 
                     email: req.body.email,
-
                     password: hashPassword,
-                    phone: req.body.phone,
                     
                 });
 
@@ -74,7 +72,7 @@ exports.signIn = async (req, res) => {
 
                 const token = jwt.sign(
                     {
-                        name: user[0].name,
+                        email: user[0].email,
                         userId: user[0]._id,
                     },
                     process.env.JWT_SECRET,
@@ -123,7 +121,6 @@ exports.googlelogin = (req, res) => {
 
                         const token = jwt.sign(
                             {
-                                name: user.name,
                                 userId: user._id,
                                 email: user.email,
                             },
@@ -132,17 +129,19 @@ exports.googlelogin = (req, res) => {
                                 expiresIn: '10d',
                             }
                         );
-                        const { _id, name, email } = user
+                        const { _id, email } = user
                         res.status(200).json({
 
                             //saving the token & data.
                             token: token,
                             message: 'login successfully complete',
-                            user: { _id, name, email },
+                            // user: { _id, name, email },
+                            user: { _id, email },
                         });
                     } else {
                         let password = email + process.env.JWT_SECRET;
-                        let newUser = new User({ name, email, password });
+                        // let newUser = new User({ name, email, password });
+                        let newUser = new User({ email, password });
                         newUser.save((err, data) => {
                             if (err) {
                                 return res.status(400).json({
@@ -151,7 +150,6 @@ exports.googlelogin = (req, res) => {
                             }
                             const token = jwt.sign(
                                 {
-                                    name: data.name,
                                     userId: data._id,
                                     email: data.email,
                                 },
@@ -185,7 +183,7 @@ exports.facebooklogin = (req, res) => {
     })
         .then(response => response.json())
         .then(response => {
-            const { name, email } = response;
+            const { email } = response;
             User.findOne({ email }).exec((err, user) => {
                 if (err) {
                     return res.status(400).json({
@@ -197,7 +195,6 @@ exports.facebooklogin = (req, res) => {
 
                         const token = jwt.sign(
                             {
-                                name: user.name,
                                 userId: user._id,
                                 email: user.email,
                             },
@@ -206,17 +203,17 @@ exports.facebooklogin = (req, res) => {
                                 expiresIn: '10d',
                             }
                         );
-                        const { _id, name, email } = user
+                        const { _id, email } = user
                         res.status(200).json({
 
                             //saving the token & data.
                             token: token,
                             message: 'login successfully complete',
-                            user: { _id, name, email },
+                            user: { _id, email },
                         });
                     } else {
                         let password = email + process.env.JWT_SECRET;
-                        let newUser = new User({ name, email, password });
+                        let newUser = new User({ email, password });
                         newUser.save((err, data) => {
                             if (err) {
                                 return res.status(400).json({
@@ -225,7 +222,6 @@ exports.facebooklogin = (req, res) => {
                             }
                             const token = jwt.sign(
                                 {
-                                    name: data.name,
                                     userId: data._id,
                                     email: data.email,
                                 },
