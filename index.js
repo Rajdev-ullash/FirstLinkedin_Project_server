@@ -37,9 +37,9 @@ app.use('/api', userAuthRouters)
 
 //testing heroku deployment
 
-// app.get('/', (req, res) => {
-//     res.send('checking heroku deployment')
-// })
+app.get('/', (req, res) => {
+    res.send('checking heroku deployment')
+})
 
 
 //default error handler
